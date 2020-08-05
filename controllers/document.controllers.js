@@ -1,5 +1,4 @@
 
-
 exports.GetAllDocuments = (req, res) => {
     res.send("get all documents")
 }
