@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken')
 const User = require('../models/User')
+const { use } = require('../routes/document.route')
 
 exports.isAuthenticated = async (req, res, next) => {
     let token
@@ -12,7 +13,11 @@ exports.isAuthenticated = async (req, res, next) => {
         const user = await User.findOne({_id: data.id})
         if (!user) return res.status(400).json({success: false, data: null, message: "user not found, invalid token"})
         req.user = user
+
         req.token = token
+        if (user.isAdmin){
+            req.isAdmin = true
+        }
         next()
         
     } catch (err) {
@@ -26,6 +31,8 @@ exports.isAdmin = async(req, res, next) => {
         if (!user.isAdmin) {
             return res.status(401).json({success: false, data: null, message: "Admin Only"})
         }
+        req.isAdmin = user.isAdmin
+
         next()
     } catch (err) {
         return res.status(401).json({success: false, data: null, message: "Admin Only"})
